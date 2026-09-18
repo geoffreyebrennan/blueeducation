@@ -25,6 +25,26 @@
     <div class="section-label">Student request</div>
 
     <div class="field">
+      <label for="student-select">Student</label>
+      <select id="student-select">
+        <option value="alex-morgan">Alex Morgan</option>
+        <option value="maya-patel">Maya Patel</option>
+        <option value="leo-williams">Leo Williams</option>
+      </select>
+    </div>
+
+    <div class="two-col student-details">
+      <div class="field">
+        <label for="student-name">Student name</label>
+        <input type="text" id="student-name" readonly>
+      </div>
+      <div class="field">
+        <label for="student-id">Student ID</label>
+        <input type="text" id="student-id" readonly>
+      </div>
+    </div>
+
+    <div class="field">
       <label for="subject">Subject</label>
       <select id="subject">
         <option>Mathematics</option>
@@ -147,6 +167,12 @@ const tutors = [
   {name:"Noor Al-Sayed", subjects:["Physics","Mathematics"], levels:["IB","A-Level"], curricula:["IB"], languages:["English","Arabic"], timezone:2, rate:46, style:["patient","encouraging","exam-technique"], track:91, availability:["Mon eve","Wed eve"]},
 ];
 
+const students = {
+  "alex-morgan": {name:"Alex Morgan", id:"STU-1042", subject:"Mathematics", level:"A-Level", curriculum:"Edexcel", timezone:0, budget:50, language:"English", style:"patient, encouraging, exam-technique"},
+  "maya-patel": {name:"Maya Patel", id:"STU-1087", subject:"Chemistry", level:"IGCSE", curriculum:"AQA", timezone:1, budget:45, language:"English", style:"patient, visual, encouraging"},
+  "leo-williams": {name:"Leo Williams", id:"STU-1124", subject:"Physics", level:"IB", curriculum:"IB", timezone:-5, budget:55, language:"English", style:"structured, exam-technique, calm"},
+};
+
 let decisions = {}; // name -> 'proposed' | 'skipped'
 let logEntries = [];
 
@@ -181,6 +207,26 @@ function styleFit(prefText, tags){
   prefs.forEach(p=>{ if(tags.some(t=>t.includes(p)||p.includes(t))) hits++; });
   return Math.round(Math.min(100, (hits/prefs.length)*100));
 }
+
+function loadStudent(studentId){
+  const student = students[studentId];
+  if(!student) return;
+
+  document.getElementById('student-name').value = student.name;
+  document.getElementById('student-id').value = student.id;
+  document.getElementById('subject').value = student.subject;
+  document.getElementById('level').value = student.level;
+  document.getElementById('curriculum').value = student.curriculum;
+  document.getElementById('timezone').value = student.timezone;
+  document.getElementById('budget').value = student.budget;
+  document.getElementById('language').value = student.language;
+  document.getElementById('style').value = student.style;
+  runMatch();
+}
+
+document.getElementById('student-select').addEventListener('change', event=>{
+  loadStudent(event.target.value);
+});
 
 function runMatch(){
   const req = {
@@ -317,6 +363,7 @@ function renderLog(){
 }
 
 renderLog();
+loadStudent(document.getElementById('student-select').value);
 runMatch();
 </script>
 

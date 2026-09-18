@@ -123,6 +123,11 @@ header p{
   outline-offset:1px;
 }
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.student-details .field{min-width:0;}
+.student-details input[readonly]{
+  color:var(--ink-soft);
+  background:var(--paper);
+}
 
 .section-label{
   font-family:var(--serif);
