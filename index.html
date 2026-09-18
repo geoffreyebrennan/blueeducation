@@ -13,7 +13,7 @@
 
 <header>
   <div class="header-content">
-    <img class="header-icon" src="Blue_edu_icon.png" alt="Blue Education">
+    <img class="header-icon" id="header-icon" src="Blue_edu_icon.png" alt="Blue Education">
     <div class="header-copy">
       <h1>Tutor matching shortlist</h1>
       <p>Enter a student request to see hard-filtered, weighted-ranked candidates. Prototype only — sample tutor data, not connected to live records.</p>
@@ -207,10 +207,16 @@ if(savedTheme === 'light' || savedTheme === 'dark'){
 const themeToggle = document.getElementById('theme-toggle');
 const initialTheme = document.documentElement.dataset.theme ||
   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+const headerIcon = document.getElementById('header-icon');
+function updateThemeIcon(theme){
+  headerIcon.src = theme === 'dark' ? 'Blue_edu_icon_dark.png' : 'Blue_edu_icon.png';
+}
+updateThemeIcon(initialTheme);
 themeToggle.checked = initialTheme === 'dark';
 themeToggle.addEventListener('change', ()=>{
   const theme = themeToggle.checked ? 'dark' : 'light';
   document.documentElement.dataset.theme = theme;
+  updateThemeIcon(theme);
   localStorage.setItem('blue-education-theme', theme);
 });
 
