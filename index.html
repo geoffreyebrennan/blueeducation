@@ -51,7 +51,7 @@
     <ol>
       <li><strong>Choose a student.</strong> Select a student at the top of the Student request panel to load their saved dummy data.</li>
       <li><strong>Review the request.</strong> Adjust the subject, level, curriculum, timezone, budget, language, or style preference as needed.</li>
-      <li><strong>Set ranking weights.</strong> Use the sliders to change how passing tutors are ranked across track record, style, scheduling, and subject depth.</li>
+      <li><strong>Set ranking weights.</strong> Use the sliders to change how passing tutors are ranked across track record, style, and subject depth. Scheduling fit remains a fixed ranking factor.</li>
       <li><strong>Find matches.</strong> Select Find matches to apply the hard filters and refresh the ranked shortlist.</li>
       <li><strong>Review a tutor.</strong> Select a passing tutor to expand their score breakdown, then choose Propose to family or Skip.</li>
     </ol>
@@ -167,7 +167,6 @@
       <div class="weight-head"><span>Style / personality fit</span><span id="w-style-val">30%</span></div>
       <input type="range" id="w-style" min="0" max="100" value="30">
     </div>
-    
     <div class="weight-row">
       <div class="weight-head"><span>Subject depth</span><span id="w-depth-val">15%</span></div>
       <input type="range" id="w-depth" min="0" max="100" value="15">
@@ -250,12 +249,12 @@ function weights(){
   return {
     track: +document.getElementById('w-track').value,
     style: +document.getElementById('w-style').value,
-    sched: +document.getElementById('w-sched').value,
+    sched: 25,
     depth: +document.getElementById('w-depth').value,
   };
 }
 
-['w-track','w-style','w-sched','w-depth'].forEach(id=>{
+['w-track','w-style','w-depth'].forEach(id=>{
   document.getElementById(id).addEventListener('input', ()=>{
     document.getElementById(id+'-val').textContent = document.getElementById(id).value + '%';
   });
