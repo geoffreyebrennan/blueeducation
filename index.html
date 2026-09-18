@@ -13,12 +13,50 @@
 <header>
   <div class="header-content">
     <img class="header-icon" src="Blue_edu_icon.png" alt="Blue Education">
-    <div>
+    <div class="header-copy">
       <h1>Tutor matching shortlist</h1>
       <p>Enter a student request to see hard-filtered, weighted-ranked candidates. Prototype only — sample tutor data, not connected to live records.</p>
     </div>
+    <div class="header-actions">
+      <button class="help-button" id="help-button" type="button" aria-label="Open help">
+        <span class="help-icon" aria-hidden="true">?</span>
+        <span>Help</span>
+      </button>
+      <details class="settings-menu">
+        <summary aria-label="Open settings"><span class="settings-icon" aria-hidden="true">&#9881;</span><span>Settings</span></summary>
+        <div class="settings-panel">
+          <label class="theme-toggle" for="theme-toggle">
+            <span>Dark mode</span>
+            <input type="checkbox" id="theme-toggle">
+          </label>
+        </div>
+      </details>
+      <div class="user-indicator" aria-label="Signed in as Jordan Miller">
+        <span class="user-avatar" aria-hidden="true">JM</span>
+        <span class="user-name">Jordan Miller</span>
+        <span class="user-status">Signed in</span>
+      </div>
+    </div>
   </div>
 </header>
+
+<dialog class="help-modal" id="help-modal" aria-labelledby="help-title">
+  <div class="modal-header">
+    <h2 id="help-title">How to use the shortlist</h2>
+    <button class="modal-close" id="help-close" type="button" aria-label="Close help">&times;</button>
+  </div>
+  <div class="help-content">
+    <p>Use the shortlist to compare tutors against a student's request and record a coordinator decision.</p>
+    <ol>
+      <li><strong>Choose a student.</strong> Select a student at the top of the Student request panel to load their saved dummy data.</li>
+      <li><strong>Review the request.</strong> Adjust the subject, level, curriculum, timezone, budget, language, or style preference as needed.</li>
+      <li><strong>Set ranking weights.</strong> Use the sliders to change how passing tutors are ranked across track record, style, scheduling, and subject depth.</li>
+      <li><strong>Find matches.</strong> Select Find matches to apply the hard filters and refresh the ranked shortlist.</li>
+      <li><strong>Review a tutor.</strong> Select a passing tutor to expand their score breakdown, then choose Propose to family or Skip.</li>
+    </ol>
+    <p class="help-note">Hard filters always apply before ranking. Every proposal or skip is recorded in the Decision log.</p>
+  </div>
+</dialog>
 
 <div class="shell">
   <div class="panel">
@@ -156,6 +194,28 @@
 </div>
 
 <script>
+const savedTheme = localStorage.getItem('blue-education-theme');
+if(savedTheme === 'light' || savedTheme === 'dark'){
+  document.documentElement.dataset.theme = savedTheme;
+}
+
+const themeToggle = document.getElementById('theme-toggle');
+const initialTheme = document.documentElement.dataset.theme ||
+  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+themeToggle.checked = initialTheme === 'dark';
+themeToggle.addEventListener('change', ()=>{
+  const theme = themeToggle.checked ? 'dark' : 'light';
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('blue-education-theme', theme);
+});
+
+const helpModal = document.getElementById('help-modal');
+document.getElementById('help-button').addEventListener('click', ()=>helpModal.showModal());
+document.getElementById('help-close').addEventListener('click', ()=>helpModal.close());
+helpModal.addEventListener('click', event=>{
+  if(event.target === helpModal) helpModal.close();
+});
+
 const tutors = [
   {name:"Priya Shah", subjects:["Mathematics","Physics"], levels:["A-Level","IB"], curricula:["Edexcel","IB"], languages:["English","Hindi"], timezone:0, rate:50, style:["structured","exam-technique","calm","patient"], track:92, availability:["Mon eve","Wed eve","Sat morning"]},
   {name:"Daniel Okafor", subjects:["Mathematics","Economics"], levels:["A-Level","IGCSE"], curricula:["Edexcel","AQA"], languages:["English"], timezone:1, rate:40, style:["energetic","encouraging","real-world examples"], track:85, availability:["Tue eve","Thu eve"]},
