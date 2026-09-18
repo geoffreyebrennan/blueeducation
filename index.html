@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutor Matching Shortlist — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFEDE6;
+    --paper-raised:#F6F4EE;
+    --ink:#1B2A3D;
+    --ink-soft:#4B5A6B;
+    --accent:#8A6D3B;
+    --accent-soft:#D9CBAE;
+    --success:#3F6B4E;
+    --success-bg:#E4ECE6;
+    --alert:#96402F;
+    --alert-bg:#F1E5E1;
+    --line:#D8D3C4;
+    --line-strong:#B9B29B;
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#171A16;
+      --paper-raised:#1F231D;
+      --ink:#EDEAE1;
+      --ink-soft:#B3AFA2;
+      --accent:#D0B378;
+      --accent-soft:#4A4128;
+      --success:#8FC1A2;
+      --success-bg:#22301F;
+      --alert:#E3A08F;
+      --alert-bg:#332120;
+      --line:#3A3A32;
+      --line-strong:#4E4D42;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#171A16;
+    --paper-raised:#1F231D;
+    --ink:#EDEAE1;
+    --ink-soft:#B3AFA2;
+    --accent:#D0B378;
+    --accent-soft:#4A4128;
+    --success:#8FC1A2;
+    --success-bg:#22301F;
+    --alert:#E3A08F;
+    --alert-bg:#332120;
+    --line:#3A3A32;
+    --line-strong:#4E4D42;
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.5;}
+
+  header{
+    padding:28px 32px 22px;
+    border-bottom:1px solid var(--line);
+  }
+  header h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:1.5rem;
+    margin:0 0 4px;
+  }
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:0.92rem;
+    max-width:62ch;
+  }
+
+  .shell{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:0;
+    align-items:start;
+  }
+  @media (max-width: 860px){
+    .shell{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    padding:28px;
+    border-right:1px solid var(--line);
+    position:sticky;
+    top:0;
+  }
+  @media (max-width: 860px){
+    .panel{position:static;border-right:none;border-bottom:1px solid var(--line);}
+  }
+
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+  }
+  .field select, .field input[type=text], .field input[type=number]{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid var(--line-strong);
+    border-radius:3px;
+    background:var(--paper-raised);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:0.9rem;
+  }
+  .field select:focus, .field input:focus{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+  }
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .section-label{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:0.95rem;
+    color:var(--ink);
+    margin:24px 0 10px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+  }
+  .section-label:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+
+  .weight-row{margin-bottom:14px;}
+  .weight-row .weight-head{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.82rem;
+    margin-bottom:4px;
+  }
+  .weight-row .weight-head span:last-child{color:var(--accent);font-weight:600;}
+  input[type=range]{
+    width:100%;
+    accent-color:var(--accent);
+  }
+
+  .find-btn{
+    width:100%;
+    margin-top:18px;
+    padding:11px;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    border-radius:3px;
+    font-family:var(--sans);
+    font-size:0.92rem;
+    font-weight:500;
+    cursor:pointer;
+  }
+  :root[data-theme="dark"] .find-btn, @media (prefers-color-scheme: dark){.find-btn{background:var(--accent);color:#171A16;}}
+  .find-btn:hover{opacity:0.88;}
+  .find-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  main{padding:28px 32px 60px;}
+
+  .results-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .results-head h2{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:1.15rem;
+    margin:0;
+  }
+  .results-head .count{color:var(--ink-soft);font-size:0.85rem;}
+
+  .tutor-row{
+    border-bottom:1px solid var(--line);
+    padding:16px 0;
+  }
+  .tutor-row.excluded{opacity:0.7;}
+
+  .row-top{
+    display:grid;
+    grid-template-columns:44px 1fr auto;
+    gap:14px;
+    align-items:center;
+    cursor:pointer;
+  }
+  .rank{
+    font-family:var(--serif);
+    font-size:1.5rem;
+    color:var(--accent);
+    font-weight:600;
+    text-align:center;
+  }
+  .tutor-row.excluded .rank{color:var(--ink-soft);}
+
+  .tutor-main .name-line{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .tutor-main .name-line strong{font-size:1rem;}
+  .tag-list{
+    display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;
+  }
+  .tag{
+    font-size:0.72rem;
+    padding:2px 7px;
+    border:1px solid var(--line-strong);
+    border-radius:10px;
+    color:var(--ink-soft);
+    background:var(--paper-raised);
+  }
+  .exclude-reason{
+    font-size:0.78rem;
+    color:var(--alert);
+    margin-top:5px;
+  }
+
+  .score-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:150px;
+  }
+  .score-bar{
+    width:100px;
+    height:7px;
+    background:var(--line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .score-bar-fill{
+    height:100%;
+    background:var(--accent);
+  }
+  .score-num{
+    font-variant-numeric:tabular-nums;
+    font-size:0.9rem;
+    font-weight:600;
+    min-width:30px;
+    text-align:right;
+  }
+
+  .breakdown{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:4px;
+  }
+  .breakdown.open{display:block;}
+  .breakdown .why{
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    margin:0 0 12px;
+  }
+  .sub-score{
+    display:grid;
+    grid-template-columns:130px 1fr 34px;
+    align-items:center;
+    gap:10px;
+    font-size:0.8rem;
+    margin-bottom:6px;
+  }
+  .sub-score .sub-bar{
+    height:5px;
+    background:var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .sub-score .sub-fill{height:100%;background:var(--accent);}
+
+  .actions{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+  }
+  .actions button{
+    font-family:var(--sans);
+    font-size:0.8rem;
+    padding:7px 12px;
+    border-radius:3px;
+    cursor:pointer;
+    border:1px solid var(--line-strong);
+    background:var(--paper-raised);
+    color:var(--ink);
+  }
+  .actions button.propose{
+    background:var(--success);
+    color:#fff;
+    border-color:var(--success);
+  }
+  .actions button.skip:hover{background:var(--alert-bg);border-color:var(--alert);}
+  .actions button.propose:hover{opacity:0.88;}
+  .actions button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .status-pill{
+    font-size:0.72rem;
+    padding:2px 8px;
+    border-radius:10px;
+    font-weight:500;
+  }
+  .status-pill.proposed{background:var(--success-bg);color:var(--success);}
+  .status-pill.skipped{background:var(--alert-bg);color:var(--alert);}
+
+  .log-section{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);}
+  .log-section h2{
+    font-family:var(--serif);font-weight:600;font-size:1.05rem;margin:0 0 4px;
+  }
+  .log-section p.hint{color:var(--ink-soft);font-size:0.82rem;margin:0 0 14px;}
+  .log-entry{
+    display:flex;
+    gap:12px;
+    font-size:0.83rem;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .log-entry time{color:var(--ink-soft);min-width:64px;}
+  .log-empty{color:var(--ink-soft);font-size:0.85rem;font-style:italic;}
+
+  .footnote{
+    margin-top:30px;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    max-width:70ch;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Tutor matching shortlist</h1>
+  <p>Enter a student request to see hard-filtered, weighted-ranked candidates. Prototype only — sample tutor data, not connected to live records.</p>
+</header>
+
+<div class="shell">
+  <div class="panel">
+    <div class="section-label">Student request</div>
+
+    <div class="field">
+      <label for="subject">Subject</label>
+      <select id="subject">
+        <option>Mathematics</option>
+        <option>Physics</option>
+        <option>Chemistry</option>
+        <option>Biology</option>
+        <option>English Literature</option>
+        <option>Economics</option>
+      </select>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label for="level">Level</label>
+        <select id="level">
+          <option>IGCSE</option>
+          <option selected>A-Level</option>
+          <option>IB</option>
+          <option>SAT/ACT</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="curriculum">Curriculum</label>
+        <select id="curriculum">
+          <option selected>Edexcel</option>
+          <option>AQA</option>
+          <option>OCR</option>
+          <option>IB</option>
+          <option>College Board</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label for="timezone">Family timezone</label>
+        <select id="timezone">
+          <option value="0" selected>GMT+0 (London)</option>
+          <option value="1">GMT+1</option>
+          <option value="2">GMT+2</option>
+          <option value="8">GMT+8</option>
+          <option value="-5">GMT-5</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="budget">Max budget (£/hr)</label>
+        <input type="number" id="budget" value="50" min="10" step="1">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="language">Language</label>
+      <select id="language">
+        <option selected>English</option>
+        <option>Mandarin</option>
+        <option>Arabic</option>
+        <option>Italian</option>
+        <option>Hindi</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="style">Style / personality preference (free text)</label>
+      <input type="text" id="style" value="patient, encouraging, exam-technique">
+    </div>
+
+    <div class="section-label">Ranking weights</div>
+    <p style="font-size:0.8rem;color:var(--ink-soft);margin:-4px 0 14px;">
+      Hard filters (subject, level, curriculum, language, budget) always apply first. These weights only affect how tutors who pass the filters are ranked against each other.
+    </p>
+
+    <div class="weight-row">
+      <div class="weight-head"><span>Track record</span><span id="w-track-val">30%</span></div>
+      <input type="range" id="w-track" min="0" max="100" value="30">
+    </div>
+    <div class="weight-row">
+      <div class="weight-head"><span>Style / personality fit</span><span id="w-style-val">30%</span></div>
+      <input type="range" id="w-style" min="0" max="100" value="30">
+    </div>
+    <div class="weight-row">
+      <div class="weight-head"><span>Scheduling fit</span><span id="w-sched-val">25%</span></div>
+      <input type="range" id="w-sched" min="0" max="100" value="25">
+    </div>
+    <div class="weight-row">
+      <div class="weight-head"><span>Subject depth</span><span id="w-depth-val">15%</span></div>
+      <input type="range" id="w-depth" min="0" max="100" value="15">
+    </div>
+
+    <button class="find-btn" onclick="runMatch()">Find matches</button>
+  </div>
+
+  <main>
+    <div class="results-head">
+      <h2>Ranked shortlist</h2>
+      <span class="count" id="result-count"></span>
+    </div>
+    <div id="results"></div>
+
+    <div class="log-section">
+      <h2>Decision log</h2>
+      <p class="hint">Every action a coordinator takes on a shortlist is recorded here, so a match can be reviewed or handed off later.</p>
+      <div id="log"></div>
+    </div>
+
+    <p class="footnote">
+      This prototype demonstrates the intended split of responsibility: hard filters and scoring run automatically, weights and final proposal decisions stay with the coordinator. In production, tutor data would come from the shared CRM, and track-record scores would update from the ongoing check-in process rather than being fixed values.
+    </p>
+  </main>
+</div>
+
+<script>
+const tutors = [
+  {name:"Priya Shah", subjects:["Mathematics","Physics"], levels:["A-Level","IB"], curricula:["Edexcel","IB"], languages:["English","Hindi"], timezone:0, rate:50, style:["structured","exam-technique","calm","patient"], track:92, availability:["Mon eve","Wed eve","Sat morning"]},
+  {name:"Daniel Okafor", subjects:["Mathematics","Economics"], levels:["A-Level","IGCSE"], curricula:["Edexcel","AQA"], languages:["English"], timezone:1, rate:40, style:["energetic","encouraging","real-world examples"], track:85, availability:["Tue eve","Thu eve"]},
+  {name:"Mei Lin", subjects:["Mathematics","Physics","Chemistry"], levels:["IB"], curricula:["IB"], languages:["English","Mandarin"], timezone:8, rate:55, style:["rigorous","patient","exam-technique"], track:95, availability:["Mon early AM"]},
+  {name:"Sofia Marchetti", subjects:["English Literature","Economics"], levels:["A-Level","IB"], curricula:["IB","Edexcel"], languages:["English","Italian"], timezone:1, rate:48, style:["discussion-based","encouraging"], track:88, availability:["Mon afternoon","Wed afternoon","Fri afternoon"]},
+  {name:"James Whitfield", subjects:["Mathematics"], levels:["A-Level"], curricula:["Edexcel","OCR"], languages:["English"], timezone:0, rate:60, style:["fast-paced","high-achiever focus","blunt"], track:90, availability:["Sat","Sun"]},
+  {name:"Amara Boateng", subjects:["Chemistry","Biology"], levels:["IGCSE","A-Level"], curricula:["AQA"], languages:["English"], timezone:0, rate:42, style:["patient","encouraging","visual"], track:83, availability:["Tue","Thu","Sat"]},
+  {name:"Liam Fitzgerald", subjects:["Economics","Mathematics"], levels:["SAT/ACT","A-Level"], curricula:["College Board","Edexcel"], languages:["English"], timezone:-5, rate:38, style:["structured","exam-technique","calm"], track:87, availability:["evenings (GMT-5)"]},
+  {name:"Noor Al-Sayed", subjects:["Physics","Mathematics"], levels:["IB","A-Level"], curricula:["IB"], languages:["English","Arabic"], timezone:2, rate:46, style:["patient","encouraging","exam-technique"], track:91, availability:["Mon eve","Wed eve"]},
+];
+
+let decisions = {}; // name -> 'proposed' | 'skipped'
+let logEntries = [];
+
+function weights(){
+  return {
+    track: +document.getElementById('w-track').value,
+    style: +document.getElementById('w-style').value,
+    sched: +document.getElementById('w-sched').value,
+    depth: +document.getElementById('w-depth').value,
+  };
+}
+
+['w-track','w-style','w-sched','w-depth'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    document.getElementById(id+'-val').textContent = document.getElementById(id).value + '%';
+  });
+});
+
+function scheduleFit(tz){
+  const diff = Math.min(Math.abs(tz), 24-Math.abs(tz));
+  if(diff===0) return 100;
+  if(diff<=2) return 80;
+  if(diff<=4) return 55;
+  if(diff<=6) return 30;
+  return 10;
+}
+
+function styleFit(prefText, tags){
+  const prefs = prefText.toLowerCase().split(/[,\s]+/).filter(Boolean);
+  if(prefs.length===0) return 50;
+  let hits = 0;
+  prefs.forEach(p=>{ if(tags.some(t=>t.includes(p)||p.includes(t))) hits++; });
+  return Math.round(Math.min(100, (hits/prefs.length)*100));
+}
+
+function runMatch(){
+  const req = {
+    subject: document.getElementById('subject').value,
+    level: document.getElementById('level').value,
+    curriculum: document.getElementById('curriculum').value,
+    timezone: +document.getElementById('timezone').value,
+    budget: +document.getElementById('budget').value,
+    language: document.getElementById('language').value,
+    style: document.getElementById('style').value,
+  };
+  const w = weights();
+  const wTotal = w.track + w.style + w.sched + w.depth || 1;
+
+  const scored = tutors.map(t=>{
+    const reasons = [];
+    let excluded = false;
+    if(!t.subjects.includes(req.subject)){ excluded = true; reasons.push("doesn't teach " + req.subject); }
+    if(!t.levels.includes(req.level)){ excluded = true; reasons.push("doesn't cover " + req.level); }
+    if(!t.curricula.includes(req.curriculum)){ excluded = true; reasons.push("no " + req.curriculum + " experience"); }
+    if(!t.languages.includes(req.language)){ excluded = true; reasons.push("no " + req.language); }
+    if(t.rate > req.budget){ excluded = true; reasons.push("£" + t.rate + "/hr exceeds budget"); }
+
+    const trackScore = t.track;
+    const styleScore = styleFit(req.style, t.style);
+    const schedScore = scheduleFit(t.timezone - req.timezone);
+    const depthScore = Math.min(100, t.subjects.length * 40);
+
+    const total = excluded ? 0 : Math.round(
+      (trackScore*w.track + styleScore*w.style + schedScore*w.sched + depthScore*w.depth) / wTotal
+    );
+
+    return {t, excluded, reasons, total, sub:{trackScore, styleScore, schedScore, depthScore}};
+  });
+
+  const passing = scored.filter(s=>!s.excluded).sort((a,b)=>b.total-a.total);
+  const excluded = scored.filter(s=>s.excluded);
+
+  renderResults(passing, excluded);
+}
+
+function renderResults(passing, excluded){
+  const container = document.getElementById('results');
+  container.innerHTML = '';
+  document.getElementById('result-count').textContent =
+    passing.length + ' passed filters · ' + excluded.length + ' excluded';
+
+  passing.forEach((s, i)=> container.appendChild(rowEl(s, i+1, false)));
+  excluded.forEach(s => container.appendChild(rowEl(s, null, true)));
+}
+
+function rowEl(s, rank, isExcluded){
+  const row = document.createElement('div');
+  row.className = 'tutor-row' + (isExcluded ? ' excluded' : '');
+
+  const status = decisions[s.t.name];
+  const statusHtml = status
+    ? `<span class="status-pill ${status}">${status === 'proposed' ? 'Proposed to family' : 'Skipped'}</span>`
+    : '';
+
+  row.innerHTML = `
+    <div class="row-top" onclick="toggleBreakdown(this)">
+      <div class="rank">${rank ?? '—'}</div>
+      <div class="tutor-main">
+        <div class="name-line">
+          <strong>${s.t.name}</strong>
+          ${statusHtml}
+        </div>
+        <div class="tag-list">
+          ${s.t.subjects.map(sub=>`<span class="tag">${sub}</span>`).join('')}
+        </div>
+        ${isExcluded ? `<div class="exclude-reason">Excluded — ${s.reasons.join('; ')}</div>` : ''}
+      </div>
+      ${isExcluded ? '' : `
+      <div class="score-wrap">
+        <div class="score-bar"><div class="score-bar-fill" style="width:${s.total}%"></div></div>
+        <div class="score-num">${s.total}</div>
+      </div>`}
+    </div>
+    ${isExcluded ? '' : breakdownHtml(s)}
+  `;
+  return row;
+}
+
+function breakdownHtml(s){
+  return `
+    <div class="breakdown">
+      <p class="why">Availability on file: ${s.t.availability.join(', ')}. Style tags: ${s.t.style.join(', ')}.</p>
+      ${subRow('Track record', s.sub.trackScore)}
+      ${subRow('Style / personality fit', s.sub.styleScore)}
+      ${subRow('Scheduling fit', s.sub.schedScore)}
+      ${subRow('Subject depth', s.sub.depthScore)}
+      <div class="actions">
+        <button class="propose" onclick="event.stopPropagation(); decide('${s.t.name}','proposed')">Propose to family</button>
+        <button class="skip" onclick="event.stopPropagation(); decide('${s.t.name}','skipped')">Skip</button>
+      </div>
+    </div>
+  `;
+}
+
+function subRow(label, val){
+  return `<div class="sub-score">
+    <span>${label}</span>
+    <div class="sub-bar"><div class="sub-fill" style="width:${val}%"></div></div>
+    <span>${val}</span>
+  </div>`;
+}
+
+function toggleBreakdown(el){
+  const b = el.nextElementSibling;
+  if(b) b.classList.toggle('open');
+}
+
+function decide(name, action){
+  decisions[name] = action;
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  logEntries.unshift({time, name, action});
+  renderLog();
+  runMatch(); // re-render to show status pill
+}
+
+function renderLog(){
+  const el = document.getElementById('log');
+  if(logEntries.length===0){
+    el.innerHTML = '<p class="log-empty">No decisions recorded yet for this request.</p>';
+    return;
+  }
+  el.innerHTML = logEntries.map(e=>`
+    <div class="log-entry">
+      <time>${e.time}</time>
+      <span>${e.action === 'proposed' ? 'Proposed' : 'Skipped'} <strong>${e.name}</strong></span>
+    </div>
+  `).join('');
+}
+
+renderLog();
+runMatch();
+</script>
+
+</body>
+</html>
