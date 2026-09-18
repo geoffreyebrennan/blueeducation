@@ -323,8 +323,10 @@ main{padding:28px 32px 60px;}
 .tutor-row{
   border-bottom:1px solid var(--line);
   padding:16px 0;
+  transition:background-color 140ms ease;
 }
 .tutor-row.excluded{opacity:0.7;}
+.tutor-row:not(.excluded):hover{background:var(--paper-raised);}
 
 .row-top{
   display:grid;
