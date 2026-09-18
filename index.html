@@ -129,8 +129,12 @@
         </select>
       </div>
       <div class="field">
-        <label for="budget">Max budget (£/hr)</label>
-        <input type="number" id="budget" value="50" min="10" step="1">
+        <label for="budget">Max budget tier</label>
+        <select id="budget">
+          <option value="good">Good</option>
+          <option value="better" selected>Better</option>
+          <option value="best">Best</option>
+        </select>
       </div>
     </div>
 
@@ -229,10 +233,12 @@ const tutors = [
 ];
 
 const students = {
-  "alex-morgan": {name:"Alex Morgan", id:"STU-1042", subject:"Mathematics", level:"A-Level", curriculum:"Edexcel", timezone:0, budget:50, language:"English", style:"patient, encouraging, exam-technique"},
-  "maya-patel": {name:"Maya Patel", id:"STU-1087", subject:"Chemistry", level:"IGCSE", curriculum:"AQA", timezone:1, budget:45, language:"English", style:"patient, visual, encouraging"},
-  "leo-williams": {name:"Leo Williams", id:"STU-1124", subject:"Physics", level:"IB", curriculum:"IB", timezone:-5, budget:55, language:"English", style:"structured, exam-technique, calm"},
+  "alex-morgan": {name:"Alex Morgan", id:"STU-1042", subject:"Mathematics", level:"A-Level", curriculum:"Edexcel", timezone:0, budget:"better", language:"English", style:"patient, encouraging, exam-technique"},
+  "maya-patel": {name:"Maya Patel", id:"STU-1087", subject:"Chemistry", level:"IGCSE", curriculum:"AQA", timezone:1, budget:"good", language:"English", style:"patient, visual, encouraging"},
+  "leo-williams": {name:"Leo Williams", id:"STU-1124", subject:"Physics", level:"IB", curriculum:"IB", timezone:-5, budget:"best", language:"English", style:"structured, exam-technique, calm"},
 };
+
+const budgetTiers = {good:40, better:50, best:60};
 
 let decisions = {}; // name -> 'proposed' | 'skipped'
 let logEntries = [];
@@ -295,7 +301,7 @@ function runMatch(){
     level: document.getElementById('level').value,
     curriculum: document.getElementById('curriculum').value,
     timezone: +document.getElementById('timezone').value,
-    budget: +document.getElementById('budget').value,
+    budget: budgetTiers[document.getElementById('budget').value],
     language: document.getElementById('language').value,
     style: document.getElementById('style').value,
   };
